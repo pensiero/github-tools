@@ -1,0 +1,21 @@
+<?php
+/**
+ * This configuration is for GithubTools - copy it to the `config/autoload`
+ * directory of your ZF2 application and remove the `.dist` extension from its name.
+ *
+ * Don't forget to tweak it for your needs!
+ */
+
+use GithubTools\Module;
+
+return [
+    Module::CONFIG => [
+        'github_owner'        => 'pensiero',                 // [required] github owner
+        'github_repository'   => 'github-tools',             // [required] github repository
+        'github_access_token' => '',                         // [required if repository is private] github access token
+        'github_from_branch'  => 'develop',                  // [required] new PR will be created to this branch
+        'github_to_branch'    => 'master',                   // [required] new PR will be created from this branch
+        'target_url'          => 'https://www.yoursite.com', // [optional] where is the deployed site (may be also the github url)
+        'environment'         => 'production',               // [optional] environment
+    ],
+];
