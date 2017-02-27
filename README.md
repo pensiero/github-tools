@@ -46,45 +46,39 @@ php public/index.php github mark-repo-deployed
 ```
 
 
-### Create a major release
+### Create a new release
+
+Will be created a new PR from `github_from_branch` to `github_to_branch` named with the new version name.
+Will be created a new draft release for `github_to_branch` named with the new version name.
+
+**Major**:
 
 New version name: get the latest release name and increment the *major* part of 1, according to [semver](http://semver.org/)
 Example:
 - Latest release: `v2.0.3`
 - New release: `v3.0.0`
 
-Will be created a new PR from `github_from_branch` to `github_to_branch` named with the new version name.
-Will be created a new draft release for `github_to_branch` named with the new version name.
-
 ```
 php public/index.php github github create-major-release
 ```
 
-
-### Create a minor release
+**Minor**:
 
 New version name: get the latest release name and increment the *minor* part of 1, according to [semver](http://semver.org/)
 Example:
 - Latest release: `v2.0.3`
 - New release: `v2.1.0`
 
-Will be created a new PR from `github_from_branch` to `github_to_branch` named with the new version name.
-Will be created a new draft release for `github_to_branch` named with the new version name.
-
 ```
 php public/index.php github github create-minor-release
 ```
 
-
-### Create a patch release
+**Patch**:
 
 New version name: get the latest release name and increment the *patch* part of 1, according to [semver](http://semver.org/)
 Example:
 - Latest release: `v2.0.3`
 - New release: `v2.0.4`
-
-Will be created a new PR from `github_from_branch` to `github_to_branch` named with the new version name.
-Will be created a new draft release for `github_to_branch` named with the new version name.
 
 ```
 php public/index.php github github create-patch-release
