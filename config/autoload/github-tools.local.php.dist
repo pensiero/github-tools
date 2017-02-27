@@ -14,7 +14,7 @@ return [
         'github_repository'   => 'github-tools',             // [required] github repository
         'github_access_token' => '',                         // [required if repository is private] github access token
         'github_from_branch'  => 'develop',                  // [required] new PR will be created to this branch
-        'github_to_branch'    => 'master',                   // [required] new PR will be created from this branch
+        'github_to_branch'    => 'master',                   // [required] new PR will be created from this branch (if equal to github_from_branch, read the README.md)
         'target_url'          => 'https://www.yoursite.com', // [optional] where is the deployed site (may be also the github url)
         'environment'         => 'production',               // [optional] environment
     ],

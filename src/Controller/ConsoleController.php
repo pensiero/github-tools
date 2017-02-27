@@ -163,8 +163,12 @@ class ConsoleController extends AbstractActionController
             }
         }
 
+        $from = $this->config['github_from_branch'] === $this->config['github_to_branch']
+            ? $latestRelease['name']
+            : $this->config['github_from_branch'];
+
         // get commits comparing master with develop
-        $commits = $client->api('repo')->commits()->compare($this->config['github_owner'], $this->config['github_repository'], $this->config['github_to_branch'], $this->config['github_from_branch']);
+        $commits = $client->api('repo')->commits()->compare($this->config['github_owner'], $this->config['github_repository'], $this->config['github_to_branch'], $from);
         $commits = array_map(function($commit) {
             return "- " . $commit['commit']['message'];
         }, $commits['commits']);
@@ -176,23 +180,28 @@ class ConsoleController extends AbstractActionController
 
         // create a PR
         try {
-            $client
-                ->api('pull_request')
-                ->create($this->config['github_owner'], $this->config['github_repository'], [
-                    'base'  => $this->config['github_to_branch'],
-                    'head'  => $this->config['github_from_branch'],
-                    'title' => $newReleaseVersion,
-                    'body'  => '',
-                ]);
+            if ($this->config['github_from_branch'] === $this->config['github_to_branch']) {
+                echo "PR not created because the 'from' and 'to' branches are the same\n";
+            }
+            else {
+                $client
+                    ->api('pull_request')
+                    ->create($this->config['github_owner'], $this->config['github_repository'], [
+                        'base'  => $this->config['github_to_branch'],
+                        'head'  => $this->config['github_from_branch'],
+                        'title' => $newReleaseVersion,
+                        'body'  => '',
+                    ]);
 
-            echo sprintf(
-                "Created PR '%s' into %s/%s from %s branch to %s branch\n",
-                $newReleaseVersion,
-                $this->config['github_owner'],
-                $this->config['github_repository'],
-                $this->config['github_from_branch'],
-                $this->config['github_to_branch']
-            );
+                echo sprintf(
+                    "Created PR '%s' into %s/%s from %s branch to %s branch\n",
+                    $newReleaseVersion,
+                    $this->config['github_owner'],
+                    $this->config['github_repository'],
+                    $this->config['github_from_branch'],
+                    $this->config['github_to_branch']
+                );
+            }
         }
         catch (\Exception $e) {
             echo "Error while creating a new GitHub PR\n";

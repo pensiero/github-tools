@@ -39,6 +39,8 @@ you can use the following ones:
 - `ENV` will override the `environment` config
 - `PROTOCOL` and `HOST` will be combined in order to override the `target_url` config
 
+> NOTE: if `github_from_branch` === `github_to_branch`, PR creation will be skipped and the release will be created with the diff commits against the latest release
+
 ## Available commands
 
 ### Mark a repository as deployed

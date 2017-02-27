@@ -4,6 +4,26 @@ namespace GithubTools\Util;
 class Version
 {
     /**
+     * Get all the version parts (create them if missing)
+     *
+     * @param $version
+     *
+     * @return array
+     */
+    public static function getVersionParts($version)
+    {
+        $version = str_replace('v', '', $version);
+
+        $versionParts = explode('.', $version);
+
+        $major = isset($versionParts[0]) ? (int) $versionParts[0] : 0;
+        $minor = isset($versionParts[1]) ? (int) $versionParts[1] : 0;
+        $patch = isset($versionParts[2]) ? (int) $versionParts[2] : 0;
+
+        return [$major, $minor, $patch];
+    }
+
+    /**
      * Increment major version of a semver release
      *
      * @param $version
@@ -12,9 +32,7 @@ class Version
      */
     public static function incrementMajor($version)
     {
-        $version = str_replace('v', '', $version);
-
-        list($major, $minor, $patch) = explode('.', $version);
+        list($major, $minor, $patch) = self::getVersionParts($version);
 
         return 'v' . implode('.', [((int) $major) + 1, 0, 0]);
     }
@@ -28,9 +46,7 @@ class Version
      */
     public static function incrementMinor($version)
     {
-        $version = str_replace('v', '', $version);
-
-        list($major, $minor, $patch) = explode('.', $version);
+        list($major, $minor, $patch) = self::getVersionParts($version);
 
         return 'v' . implode('.', [(int) $major, ((int) $minor) + 1, 0]);
     }
@@ -44,9 +60,7 @@ class Version
      */
     public static function incrementPatch($version)
     {
-        $version = str_replace('v', '', $version);
-
-        list($major, $minor, $patch) = explode('.', $version);
+        list($major, $minor, $patch) = self::getVersionParts($version);
 
         return 'v' . implode('.', [(int) $major, (int) $minor, ((int) $patch) + 1]);
     }
