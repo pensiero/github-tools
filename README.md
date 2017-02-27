@@ -64,7 +64,7 @@ Example:
 - New release: `v3.0.0`
 
 ```
-php public/index.php github github create-major-release
+php public/index.php github create-major-release
 ```
 
 **Minor**
@@ -76,7 +76,7 @@ Example:
 - New release: `v2.1.0`
 
 ```
-php public/index.php github github create-minor-release
+php public/index.php github create-minor-release
 ```
 
 **Patch**
@@ -88,5 +88,5 @@ Example:
 - New release: `v2.0.4`
 
 ```
-php public/index.php github github create-patch-release
+php public/index.php github create-patch-release
 ```
