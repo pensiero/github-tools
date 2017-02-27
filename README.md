@@ -30,7 +30,7 @@ To install it, add the following line into your composer.json file:
 
 ## Configuration
 
-Use the [config/github-tools.local.php.dist](../config/github-tools.local.php.dist) as blueprint configuration file:
+Use the [config/github-tools.local.php.dist](config/github-tools.local.php.dist) as blueprint configuration file:
 copy it to the `config/autoload` directory of your ZF2 application and remove the `.dist` extension from its name.
 
 If you are using environment variables to store sensible informations of your projects (like auth keys)
