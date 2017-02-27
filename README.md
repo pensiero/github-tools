@@ -7,7 +7,7 @@ Created by Oscar Fanelli
 ZF2 module that provides tools to connect your application with your GitHub repository via ZF2 console.
 What you can do?
 
-- Automatically create a new PR and draft release, based on the diff commits between `develop` and `master` branches
+- Automatically create a new PR (from `develop` to `master`) and a new draft release (its notes will contains the diff commits between `develop` and `master`)
 - Mark a repository as deployed
 
 ## Installation
