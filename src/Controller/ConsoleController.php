@@ -163,12 +163,15 @@ class ConsoleController extends AbstractActionController
             }
         }
 
-        $from = $this->config['github_from_branch'] === $this->config['github_to_branch']
+        $compareTo = $this->config['github_to_branch'] === $this->config['github_from_branch']
             ? $latestRelease['name']
-            : $this->config['github_from_branch'];
+            : $this->config['github_to_branch'];
+
+        $compareFrom = $this->config['github_from_branch'];
 
         // get commits comparing master with develop
-        $commits = $client->api('repo')->commits()->compare($this->config['github_owner'], $this->config['github_repository'], $this->config['github_to_branch'], $from);
+        $commits = $client->api('repo')->commits()->compare($this->config['github_owner'], $this->config['github_repository'], $compareTo, $compareFrom);
+
         $commits = array_map(function($commit) {
             return "- " . $commit['commit']['message'];
         }, $commits['commits']);
