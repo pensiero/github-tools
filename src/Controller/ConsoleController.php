@@ -39,7 +39,7 @@ class ConsoleController extends AbstractActionController
     public function __construct($config)
     {
         if (!isset($config[Module::CONFIG])) {
-            throw new NotProvidedException('No ' . Module::CONFIG . ' configs found, please specify them in your autoload/config folder using the github-tools.local.php.dist blueprint');
+            throw new NotProvidedException('No ' . Module::CONFIG . ' configs found, please specify them in your config/autoload folder using the github-tools.local.php.dist blueprint');
         }
 
         $this->config = $config[Module::CONFIG];

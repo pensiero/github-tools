@@ -14,9 +14,19 @@
   "minimum-stability": "dev",
   "require": {
     "php": ">=5.6",
-    "zendframework/zend-mvc": "^2.7",
     "zendframework/zend-console": "^2.6",
-    "knplabs/github-api": "2.0.*"
+    "zendframework/zend-i18n": "^2.6",
+    "zendframework/zend-log": "^2.9",
+    "zendframework/zend-eventmanager": "^2.6",
+    "zendframework/zend-modulemanager": "^2.7",
+    "zendframework/zend-mvc": "^2.7",
+    "zendframework/zend-serializer": "^2.8",
+    "zendframework/zend-servicemanager": "^2.7",
+    "zendframework/zend-text": "^creat2.6",
+    "zendframework/zend-version": "^2.5",
+    "zendframework/zend-view": "^2.8",
+    "knplabs/github-api": "~2.0",
+    "php-http/guzzle6-adapter": "1.*"
   },
   "autoload": {
     "psr-4": {
