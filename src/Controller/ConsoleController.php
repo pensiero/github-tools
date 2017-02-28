@@ -178,8 +178,12 @@ class ConsoleController extends AbstractActionController
 
         // create a release body with compared commits
         $releaseBody = implode($commits, "\n");
+
+        // remove subcommits (lines that start with "*")
         $releaseBody = preg_replace('/\*.*/', '', $releaseBody);
-        $releaseBody = trim(preg_replace('/\n\n/', '', $releaseBody));
+
+        // remove empty lines
+        $releaseBody = preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n", $releaseBody);
 
         // create a PR
         try {
