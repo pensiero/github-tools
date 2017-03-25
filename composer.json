@@ -28,6 +28,11 @@
     "knplabs/github-api": "~2.0",
     "php-http/guzzle6-adapter": "1.*"
   },
+  "scripts": {
+    "docker-build": "docker build . -t github_tools -f Dockerfile",
+    "docker-build-dev": "docker build . -t github_tools -f Dockerfile_development",
+    "docker-bash": "docker run -v /Users/Oscar/Sites/github-tools/:/var/www/ -i -t github_tools bash"
+  },
   "autoload": {
     "psr-4": {
       "GithubTools\\": "src/"
