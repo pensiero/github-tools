@@ -13,6 +13,11 @@ class ConsoleController extends AbstractActionController
      */
     protected $config;
 
+    /**
+     * @var array
+     */
+    protected $client;
+
     private function overrideConfigsWithEnvironmentVariables()
     {
         // github access token
@@ -46,6 +51,14 @@ class ConsoleController extends AbstractActionController
 
         // override (if not null) configs with environment variables
         $this->overrideConfigsWithEnvironmentVariables();
+
+        if (!$this->config['github_access_token']) {
+            throw new NotProvidedException('github_access_token config must be provided in order to connect to GitHub');
+        }
+
+        // authenticate to github client
+        $this->client = new \Github\Client();
+        $this->client->authenticate($this->config['github_access_token'], null, \Github\Client::AUTH_HTTP_TOKEN);
     }
 
     /**
@@ -55,10 +68,6 @@ class ConsoleController extends AbstractActionController
      */
     public function markRepoDeployedAction()
     {
-        if (!$this->config['github_access_token']) {
-            throw new NotProvidedException('github_access_token config must be provided in order to mark a GitHub repository as deployed');
-        }
-
         if (!$this->config['github_owner']) {
             throw new NotProvidedException('github_owner config must be provided in order to connect to a repository');
         }
@@ -79,9 +88,6 @@ class ConsoleController extends AbstractActionController
             throw new NotProvidedException('github_to_branch config must be provided in order to create a GitHub deploy');
         }
 
-        // authenticate to github client
-        $client = new \Github\Client();
-        $client->authenticate($this->config['github_access_token'], null, \Github\Client::AUTH_HTTP_TOKEN);
         $params = [
             'state'       => 'success',
             'target_url'  => $this->config['target_url'],
@@ -89,7 +95,7 @@ class ConsoleController extends AbstractActionController
         ];
 
         // create a deploy
-        $deploy = $client
+        $deploy = $this->client
             ->api('deployment')
             ->create(
                 $this->config['github_owner'],
@@ -105,7 +111,25 @@ class ConsoleController extends AbstractActionController
         }
 
         // mark deploy as success
-        $client->api('deployment')->updateStatus($this->config['github_owner'], $this->config['github_repository'], $deploy['id'], $params);
+        $this->client->api('deployment')->updateStatus($this->config['github_owner'], $this->config['github_repository'], $deploy['id'], $params);
+    }
+
+    /**
+     * Get commits list based on branches to compare
+     *
+     * @param string $compareTo
+     * @param string $compareFrom
+     *
+     * @return array
+     */
+    private function getCommits($compareTo, $compareFrom)
+    {
+        // get commits comparing master with develop
+        $commits = $this->client->api('repo')->commits()->compare($this->config['github_owner'], $this->config['github_repository'], $compareTo, $compareFrom);
+
+        return array_reverse(array_map(function($commit) {
+            return "- " . $commit['commit']['message'];
+        }, $commits['commits']));
     }
 
     /**
@@ -117,10 +141,6 @@ class ConsoleController extends AbstractActionController
      */
     public function createRelease($version)
     {
-        if (!$this->config['github_access_token']) {
-            throw new NotProvidedException('github_access_token config must be provided in order to create a GitHub release and PR');
-        }
-
         if (!$this->config['github_owner']) {
             throw new NotProvidedException('github_owner config must be provided in order to connect to a repository');
         }
@@ -137,12 +157,8 @@ class ConsoleController extends AbstractActionController
             throw new NotProvidedException('github_to_branch config must be provided in order to create a GitHub release and PR');
         }
 
-        // authenticate to github client
-        $client = new \Github\Client();
-        $client->authenticate($this->config['github_access_token'], null, \Github\Client::AUTH_HTTP_TOKEN);
-
         // get the latest release
-        $latestRelease = $client->api('repo')->releases()->latest($this->config['github_owner'], $this->config['github_repository']);
+        $latestRelease = $this->client->api('repo')->releases()->latest($this->config['github_owner'], $this->config['github_repository']);
 
         // get the new version (based on latest release name)
         switch ($version) {
@@ -163,18 +179,16 @@ class ConsoleController extends AbstractActionController
             }
         }
 
-        $compareTo = $this->config['github_to_branch'] === $this->config['github_from_branch']
-            ? $latestRelease['name']
-            : $this->config['github_to_branch'];
+        // get commits not present in the latest release on the target branch (es: diff master with v3.1.1)
+        $commits = $this->getCommits($latestRelease['name'], $this->config['github_to_branch']);
 
-        $compareFrom = $this->config['github_from_branch'];
-
-        // get commits comparing master with develop
-        $commits = $client->api('repo')->commits()->compare($this->config['github_owner'], $this->config['github_repository'], $compareTo, $compareFrom);
-
-        $commits = array_map(function($commit) {
-            return "- " . $commit['commit']['message'];
-        }, $commits['commits']);
+        // if branches source and target are different, get their commits
+        if ($this->config['github_to_branch'] !== $this->config['github_from_branch']) {
+            $commits = array_merge(
+                $this->getCommits($this->config['github_to_branch'], $this->config['github_from_branch']),
+                $commits
+            );
+        }
 
         // create a release body with compared commits
         $releaseBody = implode($commits, "\n");
@@ -191,7 +205,7 @@ class ConsoleController extends AbstractActionController
                 echo "PR not created because the 'from' and 'to' branches are the same\n";
             }
             else {
-                $client
+                $this->client
                     ->api('pull_request')
                     ->create($this->config['github_owner'], $this->config['github_repository'], [
                         'base'  => $this->config['github_to_branch'],
@@ -216,7 +230,7 @@ class ConsoleController extends AbstractActionController
 
         // create a release
         try {
-            $client
+            $this->client
                 ->api('repo')
                 ->releases()
                 ->create($this->config['github_owner'], $this->config['github_repository'], [
